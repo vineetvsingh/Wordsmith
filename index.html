@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wordsmith</title>
+  <meta name="description" content="Guess the hidden word. Choose the word length, number of guesses, daily or endless play.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-side">
+      <button class="icon-btn" id="btn-help" aria-label="How to play" title="How to play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.3-2.5 3.8"/><circle cx="12" cy="17.2" r=".6" class="dot"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-hint" aria-label="Reveal a letter" title="Reveal a letter">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3Z"/></svg>
+      </button>
+    </div>
+    <div class="brand">
+      <h1 id="title">Wordsmith</h1>
+    </div>
+    <div class="topbar-side">
+      <button class="icon-btn" id="btn-stats" aria-label="Statistics" title="Statistics">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-settings" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </div>
+    <button class="status" id="subtitle" title="Change game settings">Fetching a word…</button>
+  </header>
+
+  <main class="play-area">
+    <div id="board" class="board" aria-label="Game board" role="grid"></div>
+    <button class="btn" id="btn-new">New word</button>
+  </main>
+
+  <div id="keyboard" class="keyboard" aria-label="Keyboard"></div>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <!-- How to play -->
+  <dialog id="dlg-help" class="modal">
+    <form method="dialog"><button class="close" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button></form>
+    <h2 tabindex="-1" autofocus>How to play</h2>
+    <p class="lead" id="help-goal"></p>
+    <p>Type a real English word and press Enter. Each tile then turns to show how close that letter is.</p>
+    <div class="example" aria-label="Example guess FORGE">
+      <span class="tile mini" data-state="correct">F</span>
+      <span class="tile mini" data-state="present">O</span>
+      <span class="tile mini" data-state="absent">R</span>
+      <span class="tile mini" data-state="absent">G</span>
+      <span class="tile mini" data-state="absent">E</span>
+    </div>
+    <ul class="legend">
+      <li><span class="swatch" data-state="correct"></span><span><strong>F</strong> is in the word, in the right spot.</span></li>
+      <li><span class="swatch" data-state="present"></span><span><strong>O</strong> is in the word, but in another spot.</span></li>
+      <li><span class="swatch" data-state="absent"></span><span><strong>R</strong>, <strong>G</strong> and <strong>E</strong> aren’t in the word.</span></li>
+    </ul>
+    <p class="muted">Every word is fetched online, and every guess is checked against a dictionary, so you’ll need a connection. The bulb reveals one letter (<span id="help-hints"></span> per game). Change the length, guesses and mode in Settings.</p>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="dlg-settings" class="modal">
+    <form method="dialog"><button class="close" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button></form>
+    <h2 tabindex="-1" autofocus>Settings</h2>
+    <form id="settings-form" class="settings">
+      <fieldset>
+        <legend>Word length</legend>
+        <div class="segmented" id="opt-length"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Guesses</legend>
+        <div class="segmented" id="opt-attempts"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Mode</legend>
+        <div class="segmented" id="opt-mode"></div>
+      </fieldset>
+      <label class="toggle">
+        <input type="checkbox" id="opt-hard">
+        <span class="switch" aria-hidden="true"></span>
+        <span>
+          <strong>Hard mode</strong>
+          <small>Letters you’ve found must be used in later guesses</small>
+        </span>
+      </label>
+      <button type="submit" class="btn primary">Start a new game</button>
+    </form>
+    <!-- Applied instantly, without restarting the game. -->
+    <div class="preferences">
+      <fieldset>
+        <legend>Theme</legend>
+        <div class="segmented" id="opt-theme"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Sound effects</legend>
+        <label class="toggle switch-only">
+          <input type="checkbox" id="opt-sound" aria-label="Sound effects">
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+      </fieldset>
+    </div>
+  </dialog>
+
+  <!-- Statistics / game over -->
+  <dialog id="dlg-stats" class="modal">
+    <form method="dialog"><button class="close" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button></form>
+    <div id="result-panel" class="result-panel" hidden>
+      <h2 id="result-title" tabindex="-1"></h2>
+      <p class="answer-reveal">The word was</p>
+      <div class="answer-word" id="result-word"></div>
+      <p class="definition" id="result-definition"></p>
+    </div>
+    <h2 class="stats-heading" tabindex="-1" autofocus>Statistics</h2>
+    <p class="muted stats-scope" id="stats-scope"></p>
+    <div class="stat-grid" id="stat-grid"></div>
+    <h3>Guess distribution</h3>
+    <div class="distribution" id="distribution"></div>
+    <div class="modal-actions" id="result-actions" hidden>
+      <button class="btn" id="btn-share">Copy result</button>
+      <button class="btn primary" id="btn-again">Play again</button>
+    </div>
+  </dialog>
+
+  <script src="js/config.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/wordService.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
